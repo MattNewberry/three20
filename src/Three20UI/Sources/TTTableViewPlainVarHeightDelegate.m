@@ -16,10 +16,50 @@
 
 #import "Three20UI/TTTableViewPlainVarHeightDelegate.h"
 
+// Style
+#import "Three20Style/TTGlobalStyle.h"
+#import "Three20Style/TTDefaultStyleSheet.h"
+
+#import "Three20UI/TTView.h"
+#import "Three20UI/TTSectionedDataSource.h"
+#import "Three20UI/UINSObjectAdditions.h"
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 @implementation TTTableViewPlainVarHeightDelegate
+
+- (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+	
+	tableView.sectionHeaderHeight = 28;
+	TTView *headerView = [[TTView alloc] initWithFrame:CGRectMake(0, 0, 320, tableView.sectionHeaderHeight)];
+	headerView.style = TTSTYLE(tableHeader);
+	
+	TTSectionedDataSource *datasource = (TTSectionedDataSource *) tableView.dataSource;
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 310, tableView.sectionHeaderHeight)];
+	label.backgroundColor = [UIColor clearColor];
+	label.text = [datasource tableView:tableView titleForHeaderInSection:section];
+	label.font = TTSTYLEVAR(tableHeaderPlainFont);
+	label.textColor = TTSTYLEVAR(tableHeaderTextColor);
+	[headerView addSubview:label];
+	
+	return [headerView autorelease];
+}
+
+- (void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+	
+	[super tableView:tableView willDisplayCell:cell forRowAtIndexPath:indexPath];
+	
+	id<TTTableViewDataSource> dataSource = (id<TTTableViewDataSource>)tableView.dataSource;
+	id item = [dataSource tableView:tableView objectForRowAtIndexPath:indexPath];
+    
+	if([[item URLValue] length] == 0)
+		cell.selectionStyle = UITableViewCellSelectionStyleNone;
+	else{
+		cell.selectionStyle = TTSTYLEVAR(tableSelectionStyle);
+		cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+	}
+}
 
 @end

@@ -44,12 +44,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-  if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
-    _navigationBarStyle = UIBarStyleDefault;
-    _statusBarStyle = UIStatusBarStyleDefault;
-  }
-
-  return self;
+	if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+		_navigationBarStyle = UIBarStyleDefault;
+		_statusBarStyle = UIStatusBarStyleBlackOpaque;
+	}
+	
+	return self;
 }
 
 

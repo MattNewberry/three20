@@ -30,6 +30,7 @@
 #import "Three20UI/TTTableHeaderDragRefreshView.h"
 #import "Three20UI/TTTableViewController.h"
 #import "Three20UI/UIViewAdditions.h"
+#import "Three20UI/TTTableViewCell.h"
 
 // UICommon
 #import "Three20UICommon/TTGlobalUICommon.h"
@@ -44,6 +45,14 @@
 // Core
 #import "Three20Core/TTCorePreprocessorMacros.h"
 
+#import "Three20UI/TTView.h"
+#import "Three20UI/TTSectionedDataSource.h"
+#import "Three20UI/UINSObjectAdditions.h"
+#import "Three20UI/TTTableCaptionItem.h"
+
+#import "Three20UI/UIViewAdditions.h"
+#import "Three20UI/UITableViewAdditions.h"
+
 // The number of pixels the table needs to be pulled down by in order to initiate the refresh.
 static const CGFloat kRefreshDeltaY = -65.0f;
 
@@ -57,6 +66,58 @@ static const CGFloat kHeaderVisibleHeight = 60.0f;
 @implementation TTTableViewDragRefreshDelegate
 
 @synthesize headerView = _headerView;
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Shopify Additions
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+	
+	tableView.sectionHeaderHeight = 28;
+	TTView *headerView = [[TTView alloc] initWithFrame:CGRectMake(0, 0, 320, tableView.sectionHeaderHeight)];
+	headerView.style = TTSTYLE(tableHeader);
+	
+	TTSectionedDataSource *datasource = (TTSectionedDataSource *) tableView.dataSource;
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 310, tableView.sectionHeaderHeight)];
+	label.backgroundColor = [UIColor clearColor];
+	label.text = [datasource tableView:tableView titleForHeaderInSection:section];
+	label.font = TTSTYLEVAR(tableHeaderPlainFont);
+	label.textColor = TTSTYLEVAR(tableHeaderTextColor);
+	[headerView addSubview:label];
+	
+	return [headerView autorelease];
+}
+
+- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+	
+	[tableView deselectRowAtIndexPath:indexPath animated:YES];
+	
+	id<TTTableViewDataSource> dataSource = (id<TTTableViewDataSource>)tableView.dataSource;
+	TTTableCaptionItem *item = [dataSource tableView:tableView objectForRowAtIndexPath:indexPath];
+	
+	[_controller didSelectObject:item atIndexPath:indexPath];
+}
+
+- (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+	id<TTTableViewDataSource> dataSource = (id<TTTableViewDataSource>)tableView.dataSource;
+	
+	id object = [dataSource tableView:tableView objectForRowAtIndexPath:indexPath];
+	Class cls = [dataSource tableView:tableView cellClassForObject:object];
+	return [cls tableView:tableView rowHeightForObject:object];
+}
+
+- (void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+	
+	[super tableView:tableView willDisplayCell:cell forRowAtIndexPath:indexPath];
+	
+	for(UIView *subview in cell.subviews)
+		subview.backgroundColor = [UIColor clearColor];
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

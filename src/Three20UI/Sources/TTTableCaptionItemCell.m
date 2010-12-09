@@ -38,25 +38,25 @@ static const CGFloat kKeyWidth = 75;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString*)identifier {
-  if (self = [super initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:identifier]) {
-    self.textLabel.font = TTSTYLEVAR(tableTitleFont);
-    self.textLabel.textColor = TTSTYLEVAR(linkTextColor);
-    self.textLabel.highlightedTextColor = TTSTYLEVAR(highlightedTextColor);
-    self.textLabel.textAlignment = UITextAlignmentRight;
-    self.textLabel.lineBreakMode = UILineBreakModeTailTruncation;
-    self.textLabel.numberOfLines = 1;
-    self.textLabel.adjustsFontSizeToFitWidth = YES;
-
-    self.detailTextLabel.font = TTSTYLEVAR(tableSmallFont);
-    self.detailTextLabel.textColor = TTSTYLEVAR(textColor);
-    self.detailTextLabel.highlightedTextColor = TTSTYLEVAR(highlightedTextColor);
-    self.detailTextLabel.adjustsFontSizeToFitWidth = YES;
-    self.detailTextLabel.minimumFontSize = 8;
-    self.detailTextLabel.lineBreakMode = UILineBreakModeWordWrap;
-    self.detailTextLabel.numberOfLines = 0;
-  }
-
-  return self;
+	if (self = [super initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:identifier]) {
+		self.textLabel.font = [UIFont systemFontOfSize:15];
+		self.textLabel.textColor = TTSTYLEVAR(linkTextColor);
+		self.textLabel.highlightedTextColor = TTSTYLEVAR(highlightedTextColor);
+		self.textLabel.textAlignment = UITextAlignmentLeft;
+		self.textLabel.lineBreakMode = UILineBreakModeTailTruncation;
+		self.textLabel.numberOfLines = 1;
+		self.textLabel.adjustsFontSizeToFitWidth = YES;
+		
+		self.detailTextLabel.font = TTSTYLEVAR(tableSmallFont);
+		self.detailTextLabel.textColor = TTSTYLEVAR(textColor);
+		self.detailTextLabel.highlightedTextColor = TTSTYLEVAR(highlightedTextColor);
+		self.detailTextLabel.adjustsFontSizeToFitWidth = YES;
+		self.detailTextLabel.minimumFontSize = 8;
+		self.detailTextLabel.lineBreakMode = UILineBreakModeWordWrap;
+		self.detailTextLabel.numberOfLines = 0;
+	}
+	
+	return self;
 }
 
 
@@ -68,16 +68,16 @@ static const CGFloat kKeyWidth = 75;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 + (CGFloat)tableView:(UITableView*)tableView rowHeightForObject:(id)object {
-  TTTableCaptionItem* item = object;
-
-  CGFloat margin = [tableView tableCellMargin];
-  CGFloat width = tableView.width - (kKeyWidth + kKeySpacing + kTableCellHPadding*2 + margin*2);
-
-  CGSize detailTextSize = [item.text sizeWithFont:TTSTYLEVAR(tableSmallFont)
-                                constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
-                                    lineBreakMode:UILineBreakModeWordWrap];
-
-  return detailTextSize.height + kTableCellVPadding*2;
+	TTTableCaptionItem* item = object;
+	
+	CGFloat margin = [tableView tableCellMargin];
+	CGFloat width = tableView.width - (kKeyWidth + kKeySpacing + kTableCellHPadding*2 + margin*2) - 8;
+	
+	CGSize detailTextSize = [item.text sizeWithFont:TTSTYLEVAR(tableSmallFont)
+								  constrainedToSize:CGSizeMake(width, CGFLOAT_MAX)
+									  lineBreakMode:UILineBreakModeWordWrap];
+	
+	return detailTextSize.height + kTableCellVPadding*2;
 }
 
 

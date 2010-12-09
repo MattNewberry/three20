@@ -328,35 +328,28 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)keyboardDidAppear:(BOOL)animated withBounds:(CGRect)bounds {
-  [super keyboardDidAppear:animated withBounds:bounds];
-  self.tableView.frame = TTRectContract(self.tableView.frame, 0, bounds.size.height);
-  [self.tableView scrollFirstResponderIntoView];
-  [self layoutOverlayView];
-  [self layoutBannerView];
+	[super keyboardDidAppear:animated withBounds:bounds];
+	CGRect screenRectInTableSuperView = [self.tableView.superview convertRect:[UIScreen mainScreen].bounds 
+																	 fromView:[UIApplication sharedApplication].keyWindow];
+	CGFloat bottomOffset = CGRectGetMaxY(screenRectInTableSuperView) - CGRectGetMaxY(self.tableView.frame);
+	self.tableView.frame = TTRectContract(self.tableView.frame, 0, bounds.size.height - bottomOffset);
+	[self.tableView scrollFirstResponderIntoView];
+	
+	if([self respondsToSelector:@selector(layoutOverlayView)]){
+		
+		[self performSelector:@selector(layoutOverlayView)];
+		[self performSelector:@selector(layoutBannerView)];
+	}
 }
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)keyboardWillDisappear:(BOOL)animated withBounds:(CGRect)bounds {
-  [super keyboardWillDisappear:animated withBounds:bounds];
-
-  // If we do this when there is currently no table view, we can get into a weird loop where the
-  // table view gets doubly-initialized. self.tableView will try to initialize it; this will call
-  // self.view, which will call -loadView, which often calls self.tableView, which initializes it.
-  if (_tableView) {
-    CGRect previousFrame = self.tableView.frame;
-    self.tableView.frame = TTRectContract(self.tableView.frame, 0, -bounds.size.height);
-
-    // There's any number of edge cases wherein a table view controller will get this callback but
-    // it shouldn't resize itself -- e.g. when a controller has the keyboard up, and then drills
-    // down into this controller. This is a sanity check to avoid situations where the table
-    // extends way off the bottom of the screen and becomes unusable.
-    if (self.tableView.height > self.view.bounds.size.height) {
-      self.tableView.frame = previousFrame;
-    }
-  }
+	[super keyboardWillDisappear:animated withBounds:bounds];
+    
+	/* this is in place due to views not resizing properly when dismissing the keyboard		*/
+	
+	if (_tableView)
+		self.tableView.frame = self.view.frame;
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)keyboardDidDisappear:(BOOL)animated withBounds:(CGRect)bounds {
@@ -375,14 +368,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)beginUpdates {
   [super beginUpdates];
-  [_tableView beginUpdates];
+	
+	if(_isViewAppearing && _flags.isShowingModel)
+		[_tableView beginUpdates];
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)endUpdates {
   [super endUpdates];
-  [_tableView endUpdates];
+	
+	if(_isViewAppearing && _flags.isShowingModel)
+		[_tableView endUpdates];
 }
 
 
@@ -549,16 +546,19 @@
         if (newIndexPath) {
           if (newIndexPath.length == 1) {
             TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"INSERTING SECTION AT %@", newIndexPath);
+			  NSLog(@"INSERTING SECTION AT %@", newIndexPath);
             NSInteger sectionIndex = [newIndexPath indexAtPosition:0];
             [_tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
                       withRowAnimation:UITableViewRowAnimationTop];
           } else if (newIndexPath.length == 2) {
             TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"INSERTING ROW AT %@", newIndexPath);
+			  NSLog(@"INSERTING ROW AT %@", newIndexPath);
             [_tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
                               withRowAnimation:UITableViewRowAnimationTop];
-
-            [_tableView scrollToRowAtIndexPath:newIndexPath
-                              atScrollPosition:UITableViewScrollPositionNone animated:NO];
+			
+			  if(!_flags.isViewSuspended)
+				  [_tableView scrollToRowAtIndexPath:newIndexPath
+									atScrollPosition:UITableViewScrollPositionNone animated:NO];
           }
           [self invalidateView];
         } else {

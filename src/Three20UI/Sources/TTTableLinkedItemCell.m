@@ -19,6 +19,7 @@
 // UI
 #import "Three20UI/TTNavigator.h"
 #import "Three20UI/TTTableLinkedItem.h"
+#import "Three20UI/UINSObjectAdditions.h"
 
 // UINavigator
 #import "Three20UINavigator/TTURLMap.h"
@@ -59,33 +60,35 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)setObject:(id)object {
-  if (_item != object) {
-    [_item release];
-    _item = [object retain];
-
-    TTTableLinkedItem* item = object;
-
-    if (item.URL) {
-      TTNavigationMode navigationMode = [[TTNavigator navigator].URLMap
-                                         navigationModeForURL:item.URL];
-      if (item.accessoryURL) {
-        self.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-
-      } else if (navigationMode == TTNavigationModeCreate ||
-                 navigationMode == TTNavigationModeShare) {
-        self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-
-      } else {
-        self.accessoryType = UITableViewCellAccessoryNone;
-      }
-
-      self.selectionStyle = TTSTYLEVAR(tableSelectionStyle);
-
-    } else {
-      self.accessoryType = UITableViewCellAccessoryNone;
-      self.selectionStyle = UITableViewCellSelectionStyleNone;
-    }
-  }
+	if (_item != object) {
+		[_item release];
+		_item = [object retain];
+		
+		TTTableLinkedItem* item = object;
+		self.textLabel.font = TTSTYLEVAR(tableTitleFont);
+        
+		if ([item.URLValue length] > 0) {
+			TTNavigationMode navigationMode = [[TTNavigator navigator].URLMap
+											   navigationModeForURL:item.URL];
+			if (item.accessoryURL) {
+				self.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+				
+			} else if (navigationMode == TTNavigationModeCreate ||
+					   navigationMode == TTNavigationModeShare) {
+				//self.accessoryView = DETAIL_ICON;
+				self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+				
+			} else {
+				self.accessoryType = UITableViewCellAccessoryNone;
+			}
+			
+			self.selectionStyle = TTSTYLEVAR(tableSelectionStyle);
+			
+		} else {
+			self.accessoryType = UITableViewCellAccessoryNone;
+			//self.selectionStyle = UITableViewCellSelectionStyleNone;
+		}
+	}
 }
 
 

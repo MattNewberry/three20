@@ -22,6 +22,10 @@
 #import "Three20UI/UIViewAdditions.h"
 #import "Three20Style/UIFontAdditions.h"
 
+// Style
+#import "Three20Style/TTGlobalStyle.h"
+#import "Three20Style/TTDefaultStyleSheet.h"
+
 // UICommon
 #import "Three20UICommon/TTGlobalUICommon.h"
 
@@ -142,37 +146,50 @@ static const CGFloat kControlPadding = 8;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)layoutSubviews {
-  [super layoutSubviews];
-
-  if ([TTTableControlCell shouldSizeControlToFit:_control]) {
-    _control.frame = CGRectInset(self.contentView.bounds, 2, kTableCellSpacing / 2);
-
-  } else {
-    CGFloat minX = kControlPadding;
-    CGFloat contentWidth = self.contentView.width - kControlPadding;
-    if (![TTTableControlCell shouldRespectControlPadding:_control]) {
-      contentWidth -= kControlPadding;
-    }
-    if (self.textLabel.text.length) {
-      CGSize textSize = [self.textLabel sizeThatFits:self.contentView.bounds.size];
-      contentWidth -= textSize.width + kTableCellSpacing;
-      minX += textSize.width + kTableCellSpacing;
-    }
-
-    if (!_control.height) {
-      [_control sizeToFit];
-    }
-
-    if ([TTTableControlCell shouldConsiderControlIntrinsicSize:_control]) {
-      minX += contentWidth - _control.width;
-    }
-
-    // XXXjoe For some reason I need to re-add the control as a subview or else
-    // the re-use of the cell will cause the control to fail to paint itself on occasion
-    [self.contentView addSubview:_control];
-    _control.frame = CGRectMake(minX, floor(self.contentView.height/2 - _control.height/2),
-                                contentWidth, _control.height);
-  }
+	[super layoutSubviews];
+    
+	if ([TTTableControlCell shouldSizeControlToFit:_control]) {
+		_control.frame = CGRectInset(self.contentView.bounds, 2, kTableCellSpacing / 2);
+		
+	} else {
+		CGFloat minX = kControlPadding;
+		CGFloat contentWidth = self.contentView.width - kControlPadding;
+		if (![TTTableControlCell shouldRespectControlPadding:_control]) {
+			contentWidth -= kControlPadding;
+		}
+		if (self.textLabel.text.length) {
+			CGSize textSize = [self.textLabel sizeThatFits:self.contentView.bounds.size];
+			contentWidth -= textSize.width + kTableCellSpacing;
+			minX += textSize.width + kTableCellSpacing;
+		}
+		
+		if (!_control.height) {
+			[_control sizeToFit];
+		}
+		
+		if ([TTTableControlCell shouldConsiderControlIntrinsicSize:_control]) {
+			minX += contentWidth - _control.width;
+		}
+		
+		// XXXjoe For some reason I need to re-add the control as a subview or else
+		// the re-use of the cell will cause the control to fail to paint itself on occasion
+		[self.contentView addSubview:_control];
+		_control.frame = CGRectMake(minX, floor(self.contentView.height/2 - _control.height/2),
+									contentWidth - kControlPadding, _control.height);
+	}
+	
+	self.textLabel.font = TTSTYLEVAR(tableTitleFont);
+	self.textLabel.textColor = TTSTYLEVAR(textColor);
+	
+	if([_control isKindOfClass:[UITextField class]]){
+		
+		UITextField *field = (UITextField *) _control;
+		field.font = TTSTYLEVAR(tableFont);
+		field.textColor = TTSTYLEVAR(textColor);
+		
+		_control.height = [field.font lineHeight] + 6;
+		_control.top = floor(self.contentView.height/2 - _control.height/2) + 3;
+	}
 }
 
 
@@ -190,26 +207,29 @@ static const CGFloat kControlPadding = 8;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)setObject:(id)object {
-  if (object != _control && object != _item) {
-    [_control removeFromSuperview];
-    TT_RELEASE_SAFELY(_control);
-    TT_RELEASE_SAFELY(_item);
-
-    if ([object isKindOfClass:[UIView class]]) {
-      _control = [object retain];
-
-    } else if ([object isKindOfClass:[TTTableControlItem class]]) {
-      _item = [object retain];
-      _control = [_item.control retain];
-    }
-
-    _control.backgroundColor = [UIColor clearColor];
-    self.textLabel.text = _item.caption;
-
-    if (_control) {
-      [self.contentView addSubview:_control];
-    }
-  }
+	if (object != _control && object != _item) {
+		
+		if(_control.superview == self.contentView)
+			[_control removeFromSuperview];
+		
+		TT_RELEASE_SAFELY(_control);
+		TT_RELEASE_SAFELY(_item);
+		
+		if ([object isKindOfClass:[UIView class]]) {
+			_control = [object retain];
+			
+		} else if ([object isKindOfClass:[TTTableControlItem class]]) {
+			_item = [object retain];
+			_control = [_item.control retain];
+		}
+		
+		_control.backgroundColor = [UIColor clearColor];
+		self.textLabel.text = _item.caption;
+		
+		if (_control) {
+			[self.contentView addSubview:_control];
+		}
+	}
 }
 
 

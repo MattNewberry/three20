@@ -209,26 +209,26 @@ static const CGFloat kCancelHighlightThreshold = 4;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (CAGradientLayer*)shadowAsInverse:(BOOL)inverse {
-  CAGradientLayer* newShadow = [[[CAGradientLayer alloc] init] autorelease];
-  CGRect newShadowFrame = CGRectMake(0.0, 0.0,
-                                     self.frame.size.width,
-                                     inverse ? kShadowInverseHeight : kShadowHeight);
-  newShadow.frame = newShadowFrame;
-
-  CGColorRef darkColor = [UIColor colorWithRed:0.0
-                                         green:0.0
-                                          blue:0.0
-                                         alpha:inverse ?
-                                               (kShadowInverseHeight / kShadowHeight) * 0.5
-                                               : 0.5].CGColor;
-  CGColorRef lightColor = [self.backgroundColor
-                           colorWithAlphaComponent:0.0].CGColor;
-
-  newShadow.colors = [NSArray arrayWithObjects:
-            (id)(inverse ? lightColor : darkColor),
-            (id)(inverse ? darkColor : lightColor),
-            nil];
-  return newShadow;
+	CAGradientLayer* newShadow = [[[CAGradientLayer alloc] init] autorelease];
+	CGRect newShadowFrame = CGRectMake(0.0, 0.0,
+									   self.frame.size.width,
+									   inverse ? kShadowHeight : kShadowHeight);
+	newShadow.frame = newShadowFrame;
+	
+	CGColorRef darkColor = [UIColor colorWithRed:0.0
+										   green:0.0
+											blue:0.0
+										   alpha:inverse ?
+							(kShadowHeight / kShadowHeight) * 0.3
+												: 0.3].CGColor;
+	CGColorRef lightColor = [self.backgroundColor
+							 colorWithAlphaComponent:0.0].CGColor;
+	
+	newShadow.colors = [NSArray arrayWithObjects:
+						(id)(inverse ? lightColor : darkColor),
+						(id)(inverse ? darkColor : lightColor),
+						nil];
+	return newShadow;
 }
 
 
