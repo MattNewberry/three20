@@ -518,11 +518,11 @@
             TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"UPDATING SECTION AT %@", newIndexPath);
             NSInteger sectionIndex = [newIndexPath indexAtPosition:0];
             [_tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-                      withRowAnimation:UITableViewRowAnimationTop];
+                      withRowAnimation:UITableViewRowAnimationFade];
           } else if (newIndexPath.length == 2) {
             TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"UPDATING ROW AT %@", newIndexPath);
             [_tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
-                              withRowAnimation:UITableViewRowAnimationTop];
+                              withRowAnimation:UITableViewRowAnimationFade];
           }
           [self invalidateView];
         } else {
@@ -549,12 +549,12 @@
 			  NSLog(@"INSERTING SECTION AT %@", newIndexPath);
             NSInteger sectionIndex = [newIndexPath indexAtPosition:0];
             [_tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-                      withRowAnimation:UITableViewRowAnimationTop];
+                      withRowAnimation:UITableViewRowAnimationFade];
           } else if (newIndexPath.length == 2) {
             TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"INSERTING ROW AT %@", newIndexPath);
 			  NSLog(@"INSERTING ROW AT %@", newIndexPath);
             [_tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
-                              withRowAnimation:UITableViewRowAnimationTop];
+                              withRowAnimation:UITableViewRowAnimationFade];
 			
 			  if(!_flags.isViewSuspended)
 				  [_tableView scrollToRowAtIndexPath:newIndexPath
