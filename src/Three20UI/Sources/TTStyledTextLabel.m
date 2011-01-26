@@ -344,14 +344,15 @@ static const CGFloat kCancelHighlightThreshold = 4;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)drawRect:(CGRect)rect {
-  if (_highlighted) {
+
+	if (_highlighted) {
     [self.highlightedTextColor setFill];
   } else {
     [self.textColor setFill];
   }
 
-  CGPoint origin = CGPointMake(rect.origin.x + _contentInset.left,
-                               rect.origin.y + _contentInset.top);
+  CGPoint origin = CGPointMake(rect.origin.x + _contentInset.left, rect.origin.y + _contentInset.top);
+		
   [_text drawAtPoint:origin highlighted:_highlighted];
 }
 
@@ -365,7 +366,7 @@ static const CGFloat kCancelHighlightThreshold = 4;
     self.highlightedNode = nil;
   }
 
-  _text.width = newWidth;
+	_text.width = newWidth;
 }
 
 

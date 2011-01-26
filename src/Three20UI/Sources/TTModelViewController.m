@@ -426,7 +426,7 @@
 
   BOOL loading = self.model.isLoading;
   BOOL loaded = self.model.isLoaded;
-  if (!loading && !loaded && [self shouldLoad]) {
+  if ((!loading && !loaded && [self shouldLoad]) || [self.model isOutdated]) {
     [self.model load:TTURLRequestCachePolicyDefault more:NO];
   } else if (!loading && loaded && [self shouldReload]) {
     [self.model load:TTURLRequestCachePolicyNetwork more:NO];
