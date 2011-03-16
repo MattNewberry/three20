@@ -43,6 +43,7 @@
 	label.font = TTSTYLEVAR(tableHeaderPlainFont);
 	label.textColor = TTSTYLEVAR(tableHeaderTextColor);
 	[headerView addSubview:label];
+	[label release];
 	
 	return [headerView autorelease];
 }

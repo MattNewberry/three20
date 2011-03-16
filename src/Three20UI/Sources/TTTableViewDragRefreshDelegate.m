@@ -88,6 +88,7 @@ static const CGFloat kHeaderVisibleHeight = 60.0f;
 	label.font = TTSTYLEVAR(tableHeaderPlainFont);
 	label.textColor = TTSTYLEVAR(tableHeaderTextColor);
 	[headerView addSubview:label];
+	[label release];
 	
 	return [headerView autorelease];
 }

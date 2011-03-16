@@ -369,8 +369,10 @@
 - (void)beginUpdates {
   [super beginUpdates];
 	
-	if(_isViewAppearing && _flags.isShowingModel)
+	if(_isViewAppearing && _flags.isShowingModel){
+	
 		[_tableView beginUpdates];
+	}
 }
 
 
@@ -378,8 +380,10 @@
 - (void)endUpdates {
   [super endUpdates];
 	
-	if(_isViewAppearing && _flags.isShowingModel)
+	if(_isViewAppearing && _flags.isShowingModel){
+		
 		[_tableView endUpdates];
+	}
 }
 
 
@@ -508,95 +512,116 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)model:(id<TTModel>)model didUpdateObject:(id)object atIndexPath:(NSIndexPath*)indexPath {
-  if (model == _model) {
-    if (_isViewAppearing && _flags.isShowingModel) {
-      if ([_dataSource respondsToSelector:@selector(tableView:willUpdateObject:atIndexPath:)]) {
-        NSIndexPath* newIndexPath = [_dataSource tableView:_tableView willUpdateObject:object
-                                               atIndexPath:indexPath];
-        if (newIndexPath) {
-          if (newIndexPath.length == 1) {
-            TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"UPDATING SECTION AT %@", newIndexPath);
-            NSInteger sectionIndex = [newIndexPath indexAtPosition:0];
-            [_tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-                      withRowAnimation:UITableViewRowAnimationNone];
-          } else if (newIndexPath.length == 2) {
-            TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"UPDATING ROW AT %@", newIndexPath);
-            [_tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
-                              withRowAnimation:UITableViewRowAnimationNone];
-          }
-          [self invalidateView];
-        } else {
-          [_tableView reloadData];
+    
+    @try {
+        if (model == _model) {
+            if (_isViewAppearing && _flags.isShowingModel) {
+                if ([_dataSource respondsToSelector:@selector(tableView:willUpdateObject:atIndexPath:)]) {
+                    NSIndexPath* newIndexPath = [_dataSource tableView:_tableView willUpdateObject:object
+                                                           atIndexPath:indexPath];
+                    if (newIndexPath) {
+                        if (newIndexPath.length == 1) {
+                            TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"UPDATING SECTION AT %@", newIndexPath);
+                            NSInteger sectionIndex = [newIndexPath indexAtPosition:0];
+                            [_tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+                                      withRowAnimation:UITableViewRowAnimationNone];
+                        } else if (newIndexPath.length == 2) {
+                            TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"UPDATING ROW AT %@", newIndexPath);
+                            [_tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
+                                              withRowAnimation:UITableViewRowAnimationNone];
+                        }
+                        [self invalidateView];
+                    } else {
+                        [_tableView reloadData];
+                    }
+                }
+            } else {
+                [self refresh];
+            }
         }
-      }
-    } else {
-      [self refresh];
     }
-  }
+    @catch (NSException *exception) {
+        NSLog(@"**** ERROR UPDATING TABLE");
+        [self invalidateModel];
+    } 
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)model:(id<TTModel>)model didInsertObject:(id)object atIndexPath:(NSIndexPath*)indexPath {
-  if (model == _model) {
-    if (_isViewAppearing && _flags.isShowingModel) {
-      if ([_dataSource respondsToSelector:@selector(tableView:willInsertObject:atIndexPath:)]) {
-        NSIndexPath* newIndexPath = [_dataSource tableView:_tableView willInsertObject:object
-                                               atIndexPath:indexPath];
-        if (newIndexPath) {
-          if (newIndexPath.length == 1) {
-            TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"INSERTING SECTION AT %@", newIndexPath);
-            NSInteger sectionIndex = [newIndexPath indexAtPosition:0];
-            [_tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-                      withRowAnimation:UITableViewRowAnimationNone];
-          } else if (newIndexPath.length == 2) {
-            TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"INSERTING ROW AT %@", newIndexPath);
-            [_tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
-                              withRowAnimation:UITableViewRowAnimationNone];
-			
-			  if(!_flags.isViewSuspended)
-				  [_tableView scrollToRowAtIndexPath:newIndexPath
-									atScrollPosition:UITableViewScrollPositionNone animated:NO];
-          }
-          [self invalidateView];
-        } else {
-          [_tableView reloadData];
+    
+    @try {
+        if (model == _model) {
+            if (_isViewAppearing && _flags.isShowingModel) {
+                if ([_dataSource respondsToSelector:@selector(tableView:willInsertObject:atIndexPath:)]) {
+                    NSIndexPath* newIndexPath = [_dataSource tableView:_tableView willInsertObject:object
+                                                           atIndexPath:indexPath];
+                    if (newIndexPath) {
+                        if (newIndexPath.length == 1) {
+                            TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"INSERTING SECTION AT %@", newIndexPath);
+                            NSInteger sectionIndex = [newIndexPath indexAtPosition:0];
+                            [_tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+                                      withRowAnimation:UITableViewRowAnimationNone];
+                        } else if (newIndexPath.length == 2) {
+                            TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"INSERTING ROW AT %@", newIndexPath);
+                            [_tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
+                                              withRowAnimation:UITableViewRowAnimationNone];
+                            
+                            if(!_flags.isViewSuspended)
+                                [_tableView scrollToRowAtIndexPath:newIndexPath
+                                                  atScrollPosition:UITableViewScrollPositionNone animated:NO];
+                        }
+                        [self invalidateView];
+                    } else {
+                        [_tableView reloadData];
+                    }
+                }
+            } else {
+                [self refresh];
+            }
         }
-      }
-    } else {
-      [self refresh];
     }
-  }
+    @catch (NSException *exception) {
+        NSLog(@"**** ERROR INSERTING INTO TABLE");
+        [self invalidateModel];
+    }  
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)model:(id<TTModel>)model didDeleteObject:(id)object atIndexPath:(NSIndexPath*)indexPath {
-  if (model == _model) {
-    if (_isViewAppearing && _flags.isShowingModel) {
-      if ([_dataSource respondsToSelector:@selector(tableView:willRemoveObject:atIndexPath:)]) {
-        NSIndexPath* newIndexPath = [_dataSource tableView:_tableView willRemoveObject:object
-                                               atIndexPath:indexPath];
-        if (newIndexPath) {
-          if (newIndexPath.length == 1) {
-            TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"DELETING SECTION AT %@", newIndexPath);
-            NSInteger sectionIndex = [newIndexPath indexAtPosition:0];
-            [_tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-                      withRowAnimation:UITableViewRowAnimationLeft];
-          } else if (newIndexPath.length == 2) {
-            TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"DELETING ROW AT %@", newIndexPath);
-            [_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
-                              withRowAnimation:UITableViewRowAnimationLeft];
+    
+    @try {
+      if (model == _model) {
+        if (_isViewAppearing && _flags.isShowingModel) {
+          if ([_dataSource respondsToSelector:@selector(tableView:willRemoveObject:atIndexPath:)]) {
+            NSIndexPath* newIndexPath = [_dataSource tableView:_tableView willRemoveObject:object
+                                                   atIndexPath:indexPath];
+            if (newIndexPath) {
+              if (newIndexPath.length == 1) {
+                TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"DELETING SECTION AT %@", newIndexPath);
+                NSInteger sectionIndex = [newIndexPath indexAtPosition:0];
+                [_tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+                          withRowAnimation:UITableViewRowAnimationLeft];
+              } else if (newIndexPath.length == 2) {
+                TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"DELETING ROW AT %@", newIndexPath);
+                [_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
+                                  withRowAnimation:UITableViewRowAnimationLeft];
+              }
+              [self invalidateView];
+            } else {
+              [_tableView reloadData];
+            }
           }
-          [self invalidateView];
         } else {
-          [_tableView reloadData];
+          [self refresh];
         }
       }
-    } else {
-      [self refresh];
     }
-  }
+    @catch (NSException *exception) {
+        NSLog(@"**** ERROR DELETING TABLE");
+        [self invalidateModel];
+    }
 }
 
 
