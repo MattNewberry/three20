@@ -541,7 +541,7 @@
         }
     }
     @catch (NSException *exception) {
-        NSLog(@"**** ERROR UPDATING TABLE");
+        NSLog(@"**** ERROR UPDATING TABLE - %@", [exception reason]);
         [self invalidateModel];
     } 
 }
@@ -582,7 +582,7 @@
         }
     }
     @catch (NSException *exception) {
-        NSLog(@"**** ERROR INSERTING INTO TABLE");
+        NSLog(@"**** ERROR INSERTING INTO TABLE - %@", [exception reason]);
         [self invalidateModel];
     }  
 }
@@ -602,11 +602,11 @@
                 TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"DELETING SECTION AT %@", newIndexPath);
                 NSInteger sectionIndex = [newIndexPath indexAtPosition:0];
                 [_tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-                          withRowAnimation:UITableViewRowAnimationLeft];
+                          withRowAnimation:UITableViewRowAnimationNone];
               } else if (newIndexPath.length == 2) {
                 TTDCONDITIONLOG(TTDFLAG_TABLEVIEWMODIFICATIONS, @"DELETING ROW AT %@", newIndexPath);
                 [_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath]
-                                  withRowAnimation:UITableViewRowAnimationLeft];
+                                  withRowAnimation:UITableViewRowAnimationNone];
               }
               [self invalidateView];
             } else {
@@ -619,7 +619,7 @@
       }
     }
     @catch (NSException *exception) {
-        NSLog(@"**** ERROR DELETING TABLE");
+        NSLog(@"**** ERROR DELETING TABLE - %@", [exception reason]);
         [self invalidateModel];
     }
 }
