@@ -31,7 +31,6 @@
 #import "extThree20JSON/YAJLDocument.h"
 #import "extThree20JSON/YAJLGen.h"
 #import "extThree20JSON/NSObject+YAJL.h"
-#import "extThree20JSON/NSBundle+YAJL.h"
 
 /*!
  YAJL
